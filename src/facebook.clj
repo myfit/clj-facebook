@@ -37,7 +37,7 @@
                   {:format "JSON"
                    :api_key (:api_key conn)
                    :method method
-                   :call_id "12121"
+                   :call_id (str (System/currentTimeMillis))
                    :v "1.0"})]
     (assoc p :sig (calculate-signature p (:secret conn)))))
 

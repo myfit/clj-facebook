@@ -11,11 +11,12 @@
 
 (declare *fb-conn*)
 
-(def/defnk make-facebook-connection [api-key secret :secure true]
+(def/defnk make-facebook-connection [api-key secret :secure true :session-key nil]
   (let [protoc (if (= true secure) protoc-secure protoc-default)]
     (def *fb-conn* {:endpoint (str protoc rest-endpoint)
                     :api_key api-key
-                    :secret secret})))
+                    :secret secret
+                    :session_key session-key})))
 
 (defn md5 [string]
   (DigestUtils/md5Hex string))
@@ -38,7 +39,10 @@
                    :api_key (:api_key conn)
                    :method method
                    :call_id (str (System/currentTimeMillis))
-                   :v "1.0"})]
+                   :v "1.0"})
+        p   (if (= (:session_key conn) nil) 
+                p
+                (assoc p :session_key (:session_key conn)))]
     (assoc p :sig (calculate-signature p (:secret conn)))))
 
 (defn call-method [method params]

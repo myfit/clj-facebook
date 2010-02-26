@@ -1,5 +1,5 @@
-(ns facebook
-  (:require (clojure.contrib [def :as def])
+(ns facebook.client
+  (:require (clojure.contrib [def :as def] [str-utils2 :as string])
             (clojure.http [resourcefully :as resourcefully]
                           [client :as client]))
   (:import (org.apache.commons.codec.digest DigestUtils))
@@ -43,10 +43,26 @@
 
 (defn call-method [method params]
   (let [finalized-params  (finalize-params *fb-conn* method params)]
-    (prn finalized-params)
     (resourcefully/with-cookies {}
       (resourcefully/post (:endpoint *fb-conn*)
                           {} finalized-params))))
+
+(defn apify-method [call]
+  (let [call-sp   (.split call "-")
+        class     (first call-sp)
+        method    (rest call-sp)]
+    (str
+      class "."
+      (apply string/capitalize method))))
+
+(comment
+  (defmacro define-method [method args]
+    `(defn ~method ~args
+       (call-method 
+         ~(str "facebook." (apify-method method))
+         {})))
+
+  (define-method my-test-method [query]))
 
 (defn admin-get-allocation []
   false)

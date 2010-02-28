@@ -46,32 +46,41 @@
                                                 {} finalized-params))]
     (json/parse-string (first (:body-seq response)))))
 
-(defn apify-method [call]
-  (let [call-sp   (.split call "-")
+(defn apify-method [call-sym]
+  (let [call      (name call-sym)
+        call-sp   (.split call "-")
         class     (first call-sp)
-        method    (rest call-sp)]
-    (str
-      class "."
-      (apply string/capitalize method))))
+        method1   (first (rest call-sp))
+        method    (if (< 1 (count call-sp))
+                      (rest (rest call-sp))
+                      ())]
+    (format
+      "%s.%s%s"
+      class
+      method1
+      (string/join ""
+        (map string/capitalize method)))))
 
-(defmacro named-map [& keys] 
+(defmacro named-map* [keys]
   `(zipmap (map keyword '~keys) (list ~@keys)))
 
-(defmacro define-method [method map args]
-  (prn (named-map args))
+(defmacro define-method [method args]
   `(defn ~method ~args
-     (call-method 
-       ~(format "facebook.%s" map)
-       {:integration_point_name "notifications_per_day"})))
+     (call-method ~(format "facebook.%s" (apify-method method))
+                  ~(zipmap
+                       (map
+                         #(symbol (str ":" (name %)))
+                         args)
+                      args))))
 
-(define-method admin-get-allocation "admin.getAllocation" [integration_point_name])
-(define-method admin-get-app-properties "admin.getAppProperties" [])
-(define-method admin-get-metrics "admin.getMetrics" [])
-(define-method admin-get-restriction-info "admin.getRestrictionInfo" [])
-(define-method admin-set-app-properties "admin.setAppProperties" [])
-(define-method admin-ban-users "admin.banUsers" [])
-(define-method admin-unban-users "admin.unbanUsers" [])
-(define-method admin-get-banned-users "admin.getBannedUsers" [])
+(define-method admin-get-allocation [integration_point_name])
+(define-method admin-get-app-properties [])
+(define-method admin-get-metrics [])
+(define-method admin-get-restriction-info [])
+(define-method admin-set-app-properties [])
+(define-method admin-ban-users [])
+(define-method admin-unban-users [])
+(define-method admin-get-banned-users [])
 
 (def/defnk init-facebook! [api-key secret :secure true :session-key nil]
   (let [protoc (if (= true secure) protoc-secure protoc-default)]

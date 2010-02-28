@@ -24,8 +24,8 @@
   (md5 (.concat
          (reduce #(format "%s%s=%s" %1 (named (first %2)) (second %2))
            ""
-         (sort-by key params))
-       secret)))
+          (sort-by key params))
+         secret)))
 
 (defn finalize-params [conn method params]
   (let [p  (merge params
@@ -65,7 +65,8 @@
      (call-method ~(format "facebook.%s" (apify-method method))
                   ~(zipmap
                        (map
-                         #(name %)
+                         (fn [a]
+                           (keyword (name a)))
                          args)
                       args))))
 
@@ -77,6 +78,9 @@
 (define-method admin-ban-users [])
 (define-method admin-unban-users [])
 (define-method admin-get-banned-users [])
+
+(define-method friends-are-friends [uids1 uids2])
+(define-method friends-get [uid])
 
 (def/defnk init-facebook! [api-key secret :secure true :session-key nil]
   (let [protoc (if (= true secure) protoc-secure protoc-default)]

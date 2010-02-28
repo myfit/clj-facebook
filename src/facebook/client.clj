@@ -54,7 +54,11 @@
       class "."
       (apply string/capitalize method))))
 
+(defmacro named-map [& keys] 
+  `(zipmap (map keyword '~keys) (list ~@keys)))
+
 (defmacro define-method [method map args]
+  (prn (named-map args))
   `(defn ~method ~args
      (call-method 
        ~(format "facebook.%s" map)

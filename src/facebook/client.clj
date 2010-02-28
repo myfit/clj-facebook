@@ -55,12 +55,10 @@
       (apply string/capitalize method))))
 
 (defmacro define-method [method map args]
-  `(defn ~method []
-     false))
-(comment
+  `(defn ~method ~@args
      (call-method 
        ~(format "facebook.%s" map)
-       {}))
+       {})))
 
 (def fb-methods
   [['admin-get-allocation "admin.getAllocation" []]
@@ -74,7 +72,11 @@
 
 (defn generate-methods []
   (doseq [method fb-methods]
-    (define-method (first method) (second method) (second (rest method)))))
+    (let [symb (first method)
+          map  (second method)
+          args (second (rest method))]
+      (prn args)
+      (define-method symb map args))))
 
 (def/defnk make-facebook-connection [api-key secret :secure true :session-key nil]
   (let [protoc (if (= true secure) protoc-secure protoc-default)]

@@ -55,33 +55,23 @@
       (apply string/capitalize method))))
 
 (defmacro define-method [method map args]
-  `(defn ~method ~@args
+  `(defn ~method ~args
      (call-method 
        ~(format "facebook.%s" map)
-       {})))
+       {:integration_point_name "notifications_per_day"})))
 
-(def fb-methods
-  [['admin-get-allocation "admin.getAllocation" []]
-   ['admin-get-app-properties "admin.getAppProperties" []]
-   ['admin-get-metrics "admin.getMetrics" []]
-   ['admin-get-restriction-info "admin.getRestrictionInfo" []]
-   ['admin-set-app-properties "admin.setAppProperties" []]
-   ['admin-ban-users "admin.banUsers" []]
-   ['admin-unban-users "admin.unbanUsers" []]
-   ['admin-get-banned-users "admin.getBannedUsers" []]])
+(define-method admin-get-allocation "admin.getAllocation" [integration_point_name])
+(define-method admin-get-app-properties "admin.getAppProperties" [])
+(define-method admin-get-metrics "admin.getMetrics" [])
+(define-method admin-get-restriction-info "admin.getRestrictionInfo" [])
+(define-method admin-set-app-properties "admin.setAppProperties" [])
+(define-method admin-ban-users "admin.banUsers" [])
+(define-method admin-unban-users "admin.unbanUsers" [])
+(define-method admin-get-banned-users "admin.getBannedUsers" [])
 
-(defn generate-methods []
-  (doseq [method fb-methods]
-    (let [symb (first method)
-          map  (second method)
-          args (second (rest method))]
-      (prn args)
-      (define-method symb map args))))
-
-(def/defnk make-facebook-connection [api-key secret :secure true :session-key nil]
+(def/defnk init-facebook! [api-key secret :secure true :session-key nil]
   (let [protoc (if (= true secure) protoc-secure protoc-default)]
     (def *fb-conn* {:endpoint (str protoc rest-endpoint)
                     :api_key api-key
                     :secret secret
-                    :session_key session-key})
-    (generate-methods)))
+                    :session_key session-key})))

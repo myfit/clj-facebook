@@ -2,11 +2,9 @@
 
 The Facebook Platform API translated to idiomatic Clojure.
 
-Example usage:
+    (ns myns.myclass
+      (:require (facebook [client :as facebook])))
 
-    (defn get-name-test [fb-uid]
-      (make-facebook-connection "yourapikey" "yoursecret")
-      (prn (friends-get fb-uid)))
-
-    (defn -main [& args]
-      (get-name 183121977))
+    (defn mymethod []
+      (facebook/init-facebook! "yourapikey" "yoursecret")
+      (prn (facebook/friends-get 193021930)))

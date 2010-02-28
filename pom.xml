@@ -9,7 +9,7 @@
   <scm>
     <connection>scm:git:git://github.com/myfit/clj-facebook.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/myfit/clj-facebook.git</developerConnection>
-    <tag>3581b646af0682613fdb94f9886271d3c86d9ce0</tag>
+    <tag>97567c636e0116cce4af8c5b340955e437dc5a05</tag>
     <url>http://github.com/myfit/clj-facebook</url>
   </scm>
   <repositories>

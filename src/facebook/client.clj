@@ -52,8 +52,7 @@
         class     (first call-sp)
         method1   (first (rest call-sp))
         method    (if (< 1 (count call-sp))
-                      (rest (rest call-sp))
-                      ())]
+                      (rest (rest call-sp)) ())]
     (format
       "%s.%s%s"
       class
@@ -61,15 +60,12 @@
       (string/join ""
         (map string/capitalize method)))))
 
-(defmacro named-map* [keys]
-  `(zipmap (map keyword '~keys) (list ~@keys)))
-
 (defmacro define-method [method args]
   `(defn ~method ~args
      (call-method ~(format "facebook.%s" (apify-method method))
                   ~(zipmap
                        (map
-                         #(symbol (str ":" (name %)))
+                         #(name %)
                          args)
                       args))))
 
